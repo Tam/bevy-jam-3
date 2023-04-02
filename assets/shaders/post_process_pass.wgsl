@@ -10,17 +10,69 @@ var normal_prepass_texture : texture_2d<f32>;
 @group(0) @binding(3)
 var texture_sampler : sampler;
 
-const SOBEL_X = array<f32, 9>(
+var<private> SOBEL_X : array<f32, 9> = array<f32, 9>(
 	1., 0., -1.,
 	2., 0., -2.,
 	1., 0., -1.,
 );
 
-const SOBEL_Y = array<f32, 9>(
+var<private> SOBEL_Y : array<f32, 9> = array<f32, 9>(
 	 1.,  2.,  1.,
 	 0.,  0.,  0.,
 	-1., -2., -1.,
 );
+
+fn depth_edge (frag_coord : vec4<f32>, sample_index : u32) -> f32 {
+	var x_pass = vec4<f32>(0.);
+	var y_pass = vec4<f32>(0.);
+
+	var i = 0;
+	for (var x = -1.; x <= 1.; x += 1.) {
+		for (var y = -1.; y <= 1.; y += 1.) {
+			var pos = frag_coord;
+			pos.x += x;
+			pos.y += y;
+			let sample = 0.001 / prepass_depth(pos, sample_index);
+			x_pass += sample * SOBEL_X[i];
+			y_pass += sample * SOBEL_Y[i];
+			i++;
+		}
+	}
+
+	let edge = sqrt(dot(x_pass, x_pass) + dot(y_pass, y_pass));
+
+	if edge < 0.05 {
+		return 0.;
+	}
+
+	return edge;
+}
+
+fn normal_edge (frag_coord : vec4<f32>, sample_index : u32) -> f32 {
+	var x_pass = vec3<f32>(0.);
+	var y_pass = vec3<f32>(0.);
+
+	var i = 0;
+	for (var x = -1.; x <= 1.; x += 1.) {
+		for (var y = -1.; y <= 1.; y += 1.) {
+			var pos = frag_coord;
+			pos.x += x;
+			pos.y += y;
+			let sample = prepass_normal(pos, sample_index);
+			x_pass += sample * SOBEL_X[i];
+			y_pass += sample * SOBEL_Y[i];
+			i++;
+		}
+	}
+
+	let edge = sqrt(dot(x_pass, x_pass) + dot(y_pass, y_pass));
+
+	if edge < 0.5 {
+		return 0.;
+	}
+
+	return edge;
+}
 
 @fragment
 fn fragment (
@@ -31,13 +83,15 @@ fn fragment (
 
 	let color = textureSample(screen_texture, texture_sampler, in.uv);
 
-	if false {
-		let depth = prepass_depth(frag_coord, sample_index);
-		return vec4<f32>(depth, depth, depth, 1.);
-	} else {
-		let normal = prepass_normal(frag_coord, sample_index);
-		return vec4(normal, 1.);
+	let edge = max(
+		depth_edge(frag_coord, sample_index),
+		normal_edge(frag_coord, sample_index),
+	);
+
+	if edge > 0.01 {
+		return vec4<f32>(1., 1., 1., 1.);
 	}
 
-	return color;
+//	return color;
+	return vec4<f32>(0., 0., 0., 1.);
 }
