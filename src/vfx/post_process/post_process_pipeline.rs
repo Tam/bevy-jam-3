@@ -62,18 +62,6 @@ impl FromWorld for PostProcessPipeline {
 					ty: BindingType::Sampler(SamplerBindingType::Filtering),
 					count: None,
 				},
-				
-				// The settings uniform that will control the effect
-				BindGroupLayoutEntry {
-					binding: 4,
-					visibility: ShaderStages::FRAGMENT,
-					ty: BindingType::Buffer {
-						ty: BufferBindingType::Uniform,
-						has_dynamic_offset: false,
-						min_binding_size: None,
-					},
-					count: None,
-				},
 			],
 		});
 		

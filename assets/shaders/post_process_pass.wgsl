@@ -1,20 +1,26 @@
 #import bevy_core_pipeline::fullscreen_vertex_shader
 #import bevy_pbr::prepass_utils
 
-struct PostProcessSettings {
-	intensity : f32,
-}
-
 @group(0) @binding(0)
 var screen_texture : texture_2d<f32>;
 @group(0) @binding(1)
-var depth_prepass_texture : texture_2d<f32>;
+var depth_prepass_texture : texture_depth_2d;
 @group(0) @binding(2)
 var normal_prepass_texture : texture_2d<f32>;
 @group(0) @binding(3)
 var texture_sampler : sampler;
-@group(0) @binding(4)
-var<uniform> settings : PostProcessSettings;
+
+const SOBEL_X = array<f32, 9>(
+	1., 0., -1.,
+	2., 0., -2.,
+	1., 0., -1.,
+);
+
+const SOBEL_Y = array<f32, 9>(
+	 1.,  2.,  1.,
+	 0.,  0.,  0.,
+	-1., -2., -1.,
+);
 
 @fragment
 fn fragment (
@@ -22,12 +28,16 @@ fn fragment (
 	@builtin(sample_index) sample_index : u32,
 ) -> @location(0) vec4<f32> {
 	let frag_coord = in.position;
-	let offset_strength = settings.intensity;
 
-	return vec4<f32>(
-		textureSample(screen_texture, texture_sampler, in.uv + vec2<f32>(offset_strength, -offset_strength)).r,
-		textureSample(screen_texture, texture_sampler, in.uv + vec2<f32>(-offset_strength, 0.0)).g,
-		textureSample(screen_texture, texture_sampler, in.uv + vec2<f32>(0.0, offset_strength)).b,
-		1.0
-	);
+	let color = textureSample(screen_texture, texture_sampler, in.uv);
+
+	if false {
+		let depth = prepass_depth(frag_coord, sample_index);
+		return vec4<f32>(depth, depth, depth, 1.);
+	} else {
+		let normal = prepass_normal(frag_coord, sample_index);
+		return vec4(normal, 1.);
+	}
+
+	return color;
 }

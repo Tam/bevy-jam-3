@@ -155,11 +155,6 @@ impl Node for PostProcessNode {
 						// Use the sampler created for the pipeline
 						resource: BindingResource::Sampler(&post_process_pipeline.sampler),
 					},
-					BindGroupEntry {
-						binding: 4,
-						// Set the settings binding
-						resource: settings_binding.clone(),
-					},
 				],
 			});
 		
