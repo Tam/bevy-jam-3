@@ -67,7 +67,7 @@ fn normal_edge (frag_coord : vec4<f32>, sample_index : u32) -> f32 {
 
 	let edge = sqrt(dot(x_pass, x_pass) + dot(y_pass, y_pass));
 
-	if edge < 0.5 {
+	if edge < 3. {
 		return 0.;
 	}
 

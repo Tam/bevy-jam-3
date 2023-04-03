@@ -3,6 +3,7 @@ mod vfx;
 use bevy::core_pipeline::fxaa::{Fxaa, Sensitivity};
 use bevy::core_pipeline::prepass::{DepthPrepass, NormalPrepass};
 use bevy::prelude::*;
+use bevy::window::PresentMode;
 use smooth_bevy_cameras::controllers::orbit::{OrbitCameraBundle, OrbitCameraController, OrbitCameraPlugin};
 use smooth_bevy_cameras::LookTransformPlugin;
 use crate::vfx::post_process::{PostProcessPlugin, PostProcessSettings};
@@ -12,6 +13,12 @@ fn main() {
 		.insert_resource(Msaa::Off)
 		.add_plugins(DefaultPlugins.set(AssetPlugin {
 			watch_for_changes: true,
+			..default()
+		}).set(WindowPlugin {
+			primary_window: Some(Window {
+				present_mode: PresentMode::AutoVsync,
+				..default()
+			}),
 			..default()
 		}))
 		.add_plugin(PostProcessPlugin)

@@ -1,13 +1,10 @@
 use bevy::core_pipeline::prepass::ViewPrepassTextures;
-use bevy::prelude::{Msaa, QueryState, With, World};
-use bevy::render::extract_component::ComponentUniforms;
+use bevy::prelude::{QueryState, With, World};
 use bevy::render::render_graph::{Node, NodeRunError, RenderGraphContext, SlotInfo, SlotType};
 use bevy::render::render_resource::{BindGroupDescriptor, BindGroupEntry, BindingResource, Operations, PipelineCache, RenderPassColorAttachment, RenderPassDescriptor};
-use bevy::render::renderer::{RenderContext, RenderDevice, RenderQueue};
-use bevy::render::texture::{DefaultImageSampler, FallbackImageMsaaCache, FallbackImagesDepth, FallbackImagesMsaa};
+use bevy::render::renderer::{RenderContext};
 use bevy::render::view::{ExtractedView, ViewTarget};
 use crate::vfx::post_process::post_process_pipeline::PostProcessPipeline;
-use crate::vfx::post_process::post_process_settings::PostProcessSettings;
 
 /// The post process node used for the render graph
 pub struct PostProcessNode {
@@ -79,12 +76,6 @@ impl Node for PostProcessNode {
 		
 		// Get the pipeline from the cache
 		let Some(pipeline) = pipeline_cache.get_render_pipeline(post_process_pipeline.pipeline_id) else {
-			return Ok(());
-		};
-		
-		// Get the settings uniform binding
-		let settings_uniforms = world.resource::<ComponentUniforms<PostProcessSettings>>();
-		let Some(settings_binding) = settings_uniforms.uniforms().binding() else {
 			return Ok(());
 		};
 		
