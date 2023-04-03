@@ -1,5 +1,6 @@
 #import bevy_core_pipeline::fullscreen_vertex_shader
 #import bevy_pbr::prepass_utils
+#import utils::random
 
 @group(0) @binding(0)
 var screen_texture : texture_2d<f32>;
@@ -23,8 +24,8 @@ var<private> SOBEL_Y : array<f32, 9> = array<f32, 9>(
 );
 
 fn depth_edge (frag_coord : vec4<f32>, sample_index : u32) -> f32 {
-	var x_pass = vec4<f32>(0.);
-	var y_pass = vec4<f32>(0.);
+	var x_pass = vec3<f32>(0.);
+	var y_pass = vec3<f32>(0.);
 
 	var i = 0;
 	for (var x = -1.; x <= 1.; x += 1.) {
@@ -33,6 +34,7 @@ fn depth_edge (frag_coord : vec4<f32>, sample_index : u32) -> f32 {
 			pos.x += x;
 			pos.y += y;
 			let sample = 0.001 / prepass_depth(pos, sample_index);
+			let ci = u32(3. * x + y + 3.);
 			x_pass += sample * SOBEL_X[i];
 			y_pass += sample * SOBEL_Y[i];
 			i++;
@@ -41,7 +43,7 @@ fn depth_edge (frag_coord : vec4<f32>, sample_index : u32) -> f32 {
 
 	let edge = sqrt(dot(x_pass, x_pass) + dot(y_pass, y_pass));
 
-	if edge < 0.05 {
+	if (edge < 0.05) {
 		return 0.;
 	}
 
@@ -67,7 +69,7 @@ fn normal_edge (frag_coord : vec4<f32>, sample_index : u32) -> f32 {
 
 	let edge = sqrt(dot(x_pass, x_pass) + dot(y_pass, y_pass));
 
-	if edge < 3. {
+	if (edge < 3.) {
 		return 0.;
 	}
 
@@ -88,10 +90,9 @@ fn fragment (
 		normal_edge(frag_coord, sample_index),
 	);
 
-	if edge > 0.01 {
-		return vec4<f32>(1., 1., 1., 1.);
+	if (edge > 0.01) {
+		return vec4<f32>(0., 0., 0., 1.);
 	}
 
-//	return color;
-	return vec4<f32>(0., 0., 0., 1.);
+	return color;
 }

@@ -6,7 +6,7 @@ use bevy::prelude::*;
 use bevy::window::PresentMode;
 use smooth_bevy_cameras::controllers::orbit::{OrbitCameraBundle, OrbitCameraController, OrbitCameraPlugin};
 use smooth_bevy_cameras::LookTransformPlugin;
-use crate::vfx::post_process::{PostProcessPlugin, PostProcessSettings};
+use crate::vfx::VfxPlugin;
 
 fn main() {
 	App::new()
@@ -21,7 +21,7 @@ fn main() {
 			}),
 			..default()
 		}))
-		.add_plugin(PostProcessPlugin)
+		.add_plugin(VfxPlugin)
 		.add_plugin(LookTransformPlugin)
 		.add_plugin(OrbitCameraPlugin::default())
 		.add_startup_system(setup)
@@ -32,7 +32,14 @@ fn setup(
 	mut commands: Commands,
 	mut meshes: ResMut<Assets<Mesh>>,
 	mut materials: ResMut<Assets<StandardMaterial>>,
+	shaders : ResMut<Assets<Shader>>,
 ) {
+	for (_, shader) in shaders.iter() {
+		if let Some(path) = shader.import_path() {
+			println!("{:?}", path);
+		}
+	}
+	
 	// Camera
 	commands.spawn((
 		Camera3dBundle::default(),
@@ -43,7 +50,6 @@ fn setup(
 			edge_threshold: Sensitivity::Extreme,
 			edge_threshold_min: Sensitivity::Extreme,
 		},
-		PostProcessSettings { intensity: 0.002 },
 	)).insert(OrbitCameraBundle::new(
 		OrbitCameraController::default(),
 		Vec3::new(-2.0, 5.0, 5.0),

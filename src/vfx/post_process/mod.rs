@@ -1,34 +1,18 @@
-mod post_process_settings;
 mod post_process_pipeline;
 mod post_process_node;
 
 use bevy::app::App;
 use bevy::core_pipeline::core_3d;
 use bevy::prelude::Plugin;
-use bevy::render::extract_component::{ExtractComponentPlugin, UniformComponentPlugin};
 use bevy::render::render_graph::RenderGraph;
 use bevy::render::RenderApp;
 use crate::vfx::post_process::post_process_node::PostProcessNode;
 use crate::vfx::post_process::post_process_pipeline::PostProcessPipeline;
-pub use crate::vfx::post_process::post_process_settings::PostProcessSettings;
 
 pub struct PostProcessPlugin;
 
 impl Plugin for PostProcessPlugin {
 	fn build(&self, app: &mut App) {
-		app
-			// The settings will be a component that lives in the main world but will
-			// be extracted to the render world every frame.
-			// This makes it possible to control the effect from the main world.
-			// This plugin will take care of extracting it automatically.
-			// It's important to derive [`ExtractComponent`] on [`PostProcessingSettings`] for this plugin to work correctly.
-			.add_plugin(ExtractComponentPlugin::<PostProcessSettings>::default())
-			// The settings will also be the data used in the shader.
-			// This plugin will prepare the component for the GPU by creating a uniform buffer
-			// and writing the data to that buffer every frame.
-			.add_plugin(UniformComponentPlugin::<PostProcessSettings>::default())
-		;
-		
 		// We need to get the render app from the main app
 		let Ok(render_app) = app.get_sub_app_mut(RenderApp) else {
 			return;
