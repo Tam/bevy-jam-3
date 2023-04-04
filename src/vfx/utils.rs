@@ -1,18 +1,21 @@
-use bevy::prelude::{App, AssetServer, Handle, Plugin, Shader};
+use bevy::prelude::{AssetServer, FromWorld, Handle, Resource, Shader, World};
 
-pub struct UtilsPlugin;
+#[derive(Resource)]
+pub struct UtilShaders (Vec<Handle<Shader>>);
 
-impl Plugin for UtilsPlugin {
-	fn build(&self, app: &mut App) {
-		let assets_server = app.world.resource::<AssetServer>();
+impl FromWorld for UtilShaders {
+	fn from_world(world: &mut World) -> Self {
+		let assets_server = world.resource::<AssetServer>();
+		
+		let mut shaders = Self(Vec::new());
 		
 		for name in [
 			"random",
 			"noise",
 		] {
-			let _ : Handle<Shader> = assets_server.load(
-				format!("shaders/utils/{name}.wgsl")
-			);
+			shaders.0.push(assets_server.load(format!("shaders/utils/{name}.wgsl")));
 		}
+		
+		shaders
 	}
 }

@@ -32,14 +32,7 @@ fn setup(
 	mut commands: Commands,
 	mut meshes: ResMut<Assets<Mesh>>,
 	mut materials: ResMut<Assets<StandardMaterial>>,
-	shaders : ResMut<Assets<Shader>>,
 ) {
-	for (_, shader) in shaders.iter() {
-		if let Some(path) = shader.import_path() {
-			println!("{:?}", path);
-		}
-	}
-	
 	// Camera
 	commands.spawn((
 		Camera3dBundle::default(),
