@@ -6,7 +6,7 @@ use bevy::prelude::*;
 use bevy::window::PresentMode;
 use smooth_bevy_cameras::controllers::orbit::{OrbitCameraBundle, OrbitCameraController, OrbitCameraPlugin};
 use smooth_bevy_cameras::LookTransformPlugin;
-use crate::vfx::VfxPlugin;
+use crate::vfx::{CrosshatchMaterial, VfxPlugin};
 
 fn main() {
 	App::new()
@@ -31,7 +31,7 @@ fn main() {
 fn setup(
 	mut commands: Commands,
 	mut meshes: ResMut<Assets<Mesh>>,
-	mut materials: ResMut<Assets<StandardMaterial>>,
+	mut materials: ResMut<Assets<CrosshatchMaterial>>,
 ) {
 	// Camera
 	commands.spawn((
@@ -51,24 +51,24 @@ fn setup(
 	));
 	
 	// Plane
-	commands.spawn(PbrBundle {
+	commands.spawn(MaterialMeshBundle {
 		mesh: meshes.add(shape::Plane::from_size(5.0).into()),
 		material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
 		..default()
 	});
 	
 	// Cube
-	commands.spawn(PbrBundle {
+	commands.spawn(MaterialMeshBundle {
 		mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
-		material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+		material: materials.add((Color::rgb(0.8, 0.7, 0.6), Color::SEA_GREEN).into()),
 		transform: Transform::from_xyz(-1.0, 0.5, 1.0),
 		..default()
 	});
 	
 	// Ball
-	commands.spawn(PbrBundle {
+	commands.spawn(MaterialMeshBundle {
 		mesh: meshes.add(shape::Icosphere::default().try_into().unwrap()),
-		material: materials.add(Color::rgb(1.0, 0.1, 0.1).into()),
+		material: materials.add((Color::rgb(1.0, 0.1, 0.1), Color::PINK).into()),
 		transform: Transform::from_xyz(1.0, 0.5, -1.0),
 		..default()
 	});

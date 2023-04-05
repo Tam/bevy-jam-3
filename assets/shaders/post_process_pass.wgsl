@@ -1,6 +1,6 @@
 #import bevy_core_pipeline::fullscreen_vertex_shader
 #import bevy_pbr::prepass_utils
-#import utils::random
+#import utils::noise
 
 @group(0) @binding(0)
 var screen_texture : texture_2d<f32>;
