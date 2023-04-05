@@ -69,7 +69,7 @@ fn normal_edge (frag_coord : vec4<f32>, sample_index : u32) -> f32 {
 
 	let edge = sqrt(dot(x_pass, x_pass) + dot(y_pass, y_pass));
 
-	if (edge < 3.) {
+	if (edge < 1.) {
 		return 0.;
 	}
 
@@ -85,9 +85,10 @@ fn fragment (
 
 	let color = textureSample(screen_texture, texture_sampler, in.uv);
 
+	let rng = simplex_noise_2d(frag_coord.xy) * 2.;
 	let edge = max(
-		depth_edge(frag_coord, sample_index),
-		normal_edge(frag_coord, sample_index),
+		depth_edge(frag_coord + rng, sample_index),
+		normal_edge(frag_coord + rng, sample_index),
 	);
 
 	if (edge > 0.01) {

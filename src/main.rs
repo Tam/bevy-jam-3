@@ -65,6 +65,19 @@ fn setup(
 		..default()
 	});
 	
+	commands.spawn(MaterialMeshBundle {
+		mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
+		material: materials.add((Color::ORANGE_RED, Color::ORANGE).into()),
+		transform: Transform::from_xyz(-1.0, 0.5, 1.0)
+			.with_rotation(Quat::from_euler(
+				EulerRot::XYZ,
+				230f32.to_radians(),
+				0.,
+				20f32.to_radians(),
+			)),
+		..default()
+	});
+	
 	// Ball
 	commands.spawn(MaterialMeshBundle {
 		mesh: meshes.add(shape::Icosphere::default().try_into().unwrap()),

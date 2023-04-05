@@ -1,6 +1,3 @@
-#import bevy_pbr::prepass_bindings
-#import bevy_pbr::mesh_functions
-
 struct FragmentInput {
 	@builtin(front_facing) is_front: bool,
     @builtin(position) frag_coord: vec4<f32>,
