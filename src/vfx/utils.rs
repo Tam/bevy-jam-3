@@ -12,6 +12,7 @@ impl FromWorld for UtilShaders {
 		for name in [
 			"random",
 			"noise",
+			"light",
 		] {
 			shaders.0.push(assets_server.load(format!("shaders/utils/{name}.wgsl")));
 		}
