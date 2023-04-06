@@ -85,7 +85,7 @@ fn fragment (
 
 	let color = textureSample(screen_texture, texture_sampler, in.uv);
 
-	let rng = simplex_noise_2d(frag_coord.xy) * 2.;
+	let rng = simplex_noise_2d(frag_coord.xy);
 	let edge = max(
 		depth_edge(frag_coord + rng, sample_index),
 		normal_edge(frag_coord + rng, sample_index),
