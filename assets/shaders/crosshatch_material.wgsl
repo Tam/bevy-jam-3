@@ -71,11 +71,12 @@ fn fragment (in: FragmentInput) -> @location(0) vec4<f32> {
 		let light_id = get_light_id(i);
 
 		// TODO: allow unlit / unshadowed materials
-		var shadow : f32 = fetch_point_shadow(
+		let shadow : f32 = fetch_point_shadow(
 			light_id,
 			in.world_position,
 			in.world_normal,
 		);
+
 		let light_contrib = point_light(
 			light_id,
 			in.world_position.xyz,
@@ -84,6 +85,11 @@ fn fragment (in: FragmentInput) -> @location(0) vec4<f32> {
 		);
 
 		direct_light += light_contrib * shadow;
+		if (shadow < 1.) {
+			direct_light += vec3<f32>(1., 0., 1.) * 0.04;
+		} else {
+			direct_light += light_contrib;
+		}
 	}
 
 	// TODO: spot lights
